@@ -259,7 +259,7 @@ PyObject* Hero::get_state_tup()
     last_HP = data.HP;
     last_gold = gold;
 
-    PyObject* ret = Py_BuildValue("(OdO)", state, reward, _isDead ? Py_True : Py_False);
+    PyObject* ret = Py_BuildValue("(OdO)", state, reward, is_alive ? Py_True : Py_False);
 
     Py_DECREF(state);
 
@@ -283,7 +283,7 @@ PyObject* Hero::predefined_step()
     if (targetlist_size > 0)
     {
         for (int i = 0; i < targetlist_size; ++i) {
-            if (!target_list[i]->isDead() && target_list[i]->get_HP() < data.Attack) {
+            if (target_list[i]->isAlive() && target_list[i]->get_HP() < data.Attack) {
                 PyObject* obj = Py_BuildValue("(ii)", decisonType::attack, i);
                 return obj;
             }

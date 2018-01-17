@@ -40,7 +40,7 @@ bool Sprite::isAttacking()
 
 void Sprite::move()
 {
-    if (isDead())
+    if (!isAlive())
         return;
 
     if (!b_move || isBuilding())
@@ -96,7 +96,7 @@ void Sprite::move()
 
 bool Sprite::damaged(Sprite* attacker, double dmg)
 {
-    if (isDead()) {
+    if (!isAlive()) {
         return false;
     }
     data.HP -= dmg;
@@ -114,7 +114,7 @@ double Sprite::attakedDmg(Sprite* attacker, double dmg)
 
 void Sprite::dead(Sprite* attacker)
 {
-    _isDead = true;
+    is_alive = false;
     remove_visual_ent();
     for (Sprite* s : Engine->get_sprites()) {
         if (s->side != side) {

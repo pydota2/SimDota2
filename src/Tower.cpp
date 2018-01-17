@@ -45,7 +45,7 @@ Tower::~Tower()
 
 void Tower::step()
 {
-    if (isDead())
+    if (!isAlive())
         return;
     if (isAttacking())
         return;

@@ -74,7 +74,7 @@ void cppSimulatorImp::loop()
     }
 
     for (auto it = Sprites.begin(); it != Sprites.end();) {
-        if ((*it)->isDead()) {
+        if (!(*it)->isAlive()) {
             it = Sprites.erase(it);
         }
         else {

@@ -108,7 +108,7 @@ Creep::~Creep()
 
 void Creep::step()
 {
-    if (isDead())
+    if (!isAlive())
         return;
     if (isAttacking())
         return;

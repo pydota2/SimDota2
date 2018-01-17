@@ -3,6 +3,10 @@
 
 #include <Python.h>
 #include "Config.h"
+
+#include "Ability.h"
+#include "Item.h"
+
 #include "AtkDmgType.h"
 
 #include <memory>
@@ -30,6 +34,14 @@ enum UnitType
     UNITTYPE_WARD
 };
 
+enum TeamID
+{
+    TEAM_UNKNOWN = 1,
+    TEAM_RADIANT = 2,
+    TEAM_DIRE = 3,
+    TEAM_NEUTRAL = 4
+};
+
 #define SETATTR(data,type,attr) attr = *(type*)data.at(#attr)
 
 #define GET_CFG \
@@ -54,7 +66,7 @@ typedef std::unordered_map<std::string, std::unordered_map<std::string, void*> >
 class Sprite {
 public:
     Sprite(SpriteData data) : unit_type(UNITTYPE_INVALID), addiHPReg(0.0), LastAttackTime(-1),
-        exp(0), gold(0), _isDead(false), b_move(false), canvas(NULL), v_handle(NULL), data(data) {}
+        exp(0), gold(0), is_alive(true), b_move(false), canvas(NULL), v_handle(NULL), data(data) {}
 
     virtual ~Sprite(){
         remove_visual_ent();
@@ -93,7 +105,7 @@ public:
     inline Side get_side() { return side; }
     inline double get_SightRange() { return data.SightRange; }
     inline pos_tup get_location() { return location; }
-    inline bool isDead(){return _isDead;}
+    inline bool isAlive() { return is_alive; }
     inline double get_ProjectileSpeed() { return data.ProjectileSpeed; }
     double TimeToDamage(const Sprite* s);
 
@@ -104,14 +116,57 @@ protected:
     PyObject* canvas;
     SpriteData data;
     Side side;
-    pos_tup location;
-    UnitType unit_type;
-    double addiHPReg;//addtional HP reg: item, talent, etc 
+
     double LastAttackTime;
     double AttackTime;
     double exp;
     double gold;
-    bool _isDead;
+
+    // PROTOBUF members
+    size_t handle;      // a unique identifier
+    UnitType unit_type;
+    std::string name;
+    TeamID team_id;
+    size_t level;
+    pos_tup location;
+    bool is_alive;
+    int player_id;
+
+    size_t bounding_radius;
+    size_t facing;          // 0 - 359 degrees
+    size_t ground_height;
+
+    size_t vision_range_daytime;
+    size_t vision_range_nighttime;
+
+    size_t health;
+    size_t max_health;
+    float health_regen;
+
+    size_t mana;
+    size_t max_mana;
+    float mana_regen;
+
+    size_t base_movement_speed;
+    size_t current_movement_speed;
+
+    size_t base_damage;
+    size_t base_damage_variance;
+    size_t bonus_damage;
+    size_t attack_damage;
+    size_t attack_range;
+    float attack_speed;
+    float attack_anim_point;    // this is the time when hit is registered but animation not done yet
+    size_t attack_acquisition_range;
+    size_t attack_projectile_speed;
+    size_t attack_target_handle;
+
+    std::vector<Ability*> abilities;
+    std::vector<Item*> items;
+
+    // DERIVED & HELPER members
+    double addiHPReg;//addtional HP reg: item, talent, etc 
+
     bool b_move;
     PyObject* v_handle;
     pos_tup move_target;
